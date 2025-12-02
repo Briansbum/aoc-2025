@@ -1,7 +1,8 @@
 (ns day2
   (:require [clojure.java.io :as io])
   (:require [clojure.string :as str])
-  (:require [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn])
+  (:require [clojure.math :as math]))
 
 ; I'm given some int ranges in the form:
 ; 95-115,998-1012,1188511880-1188511890
@@ -21,18 +22,21 @@
   (reduce conj [] (line-seq rdr))))
 
 (defn check-id [id] 
-  ; we need to turn the id into a string so that seq works on it
-  ; then we need windows on the string, we then search in the string
-  ; for each window. This could actually be a good place for fold because
-  ; we are going to brute force many options and collection is just +
-  (let [
-    id-str (str id)
-    id-str-len (alength (to-array id-str))
-    parts (partition (quot id-str-len 2) id-str)]
-    (if (= (mod id-str-len 2) 0)
-      (if (not (= (first (first parts)) 0))
-        (if (= (first parts) (second parts)) 
-          id)))))
+  (let [id-str (str id)
+        id-str-len (count id-str)]
+    ; Try all possible pattern sizes from 1 to half the length
+    (some (fn [pattern-size]
+      (if (and (pos? pattern-size)
+               (zero? (mod id-str-len pattern-size))
+               (>= (/ id-str-len pattern-size) 2))
+        (let [pattern (subs id-str 0 pattern-size)
+              expected (apply str (repeat (/ id-str-len pattern-size) pattern))]
+          (if (and (= id-str expected)
+                   (not= (first pattern) \0))
+            id
+            nil))
+        nil))
+      (range 1 (+ 1 (quot id-str-len 2))))))
 
 (defn count-ids-in-range [[left right]] 
   ; range's upper bound is exclusive but we want it to be inclusive
@@ -41,14 +45,18 @@
 (defn solve [f]
   (->> (split-comma (first (read-instructions f)))
        (map split-dash)
-       (map count-ids-in-range)
+       (mapcat count-ids-in-range)
        (flatten)
        (filter some?)
        (reduce +)
   )
 )
 
-(println (solve "fixtures/day2.simple"))
-(println (= 1227775554 (solve "fixtures/day2.simple")))
+;(println (solve "fixtures/day2.simple"))
+;(println (= 1227775554 (solve "fixtures/day2.simple")))
 
-(println (solve "fixtures/day2.full"))
+;(println (solve "fixtures/day2.full"))
+;(println (= 52316131093 (solve "fixtures/day2.full")))
+
+(println (= 4174379265 (solve "fixtures/day2.simple")))
+
