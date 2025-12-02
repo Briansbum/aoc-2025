@@ -1,6 +1,7 @@
 (ns day2
   (:require [clojure.java.io :as io])
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str])
+  (:require [clojure.edn :as edn]))
 
 ; I'm given some int ranges in the form:
 ; 95-115,998-1012,1188511880-1188511890
@@ -10,7 +11,6 @@
 ; 111 repeats 3 times but 99 twice
 
 (defn split-dash [id]
-  (println id)
   (str/split id #"-" -1))
 
 (defn split-comma [line]
@@ -20,13 +20,6 @@
   (with-open [rdr (io/reader f)]
   (reduce conj [] (line-seq rdr))))
 
-(defn check-consecutive [acc id] 
-  
-  )
-
-(defn partitioner [[id-str acc] window-size] 
-  (partition window-size id-str))
-
 (defn check-id [id] 
   ; we need to turn the id into a string so that seq works on it
   ; then we need windows on the string, we then search in the string
@@ -35,26 +28,27 @@
   (let [
     id-str (str id)
     id-str-len (alength (to-array id-str))
-    max-window-len (quot id-str-len 5)
-    ; i over max-window-len and make partitions of id-str for each value of i
-    windows (reduce partitioner [id-str []] (range max-window-len))]
-    ; use the length as a range to compare each length of window against the rest of the int
-    ; i feel in my bones that this is a bad idea but here we go
-    ; at the very least there must be a clever option here where I can ignore any windows
-    ; that are longer than half the total length. That could even have a noticeable runtime
-    ; difference depending on the size of the data structure (????????) 
-
-    
-    (println windows)))
+    parts (partition (quot id-str-len 2) id-str)]
+    (if (= (mod id-str-len 2) 0)
+      (if (not (= (first (first parts)) 0))
+        (if (= (first parts) (second parts)) 
+          id)))))
 
 (defn count-ids-in-range [[left right]] 
-  (map check-id (range (Integer/parseInt left) (Integer/parseInt right))))
+  ; range's upper bound is exclusive but we want it to be inclusive
+  (map check-id (range (edn/read-string left) (+ 1 (edn/read-string right)))))
 
 (defn solve [f]
-  (->> (split-comma (first (read-instructions "fixtures/day2.simple")))
+  (->> (split-comma (first (read-instructions f)))
        (map split-dash)
        (map count-ids-in-range)
+       (flatten)
+       (filter some?)
+       (reduce +)
   )
 )
 
 (println (solve "fixtures/day2.simple"))
+(println (= 1227775554 (solve "fixtures/day2.simple")))
+
+(println (solve "fixtures/day2.full"))
