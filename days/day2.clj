@@ -55,7 +55,7 @@
 ;(println (solve "fixtures/day2.simple"))
 ;(println (= 1227775554 (solve "fixtures/day2.simple")))
 
-;(println (solve "fixtures/day2.full"))
+(println (solve "fixtures/day2.full"))
 ;(println (= 52316131093 (solve "fixtures/day2.full")))
 
 (println (= 4174379265 (solve "fixtures/day2.simple")))
