@@ -4,12 +4,6 @@
   (:require [clojure.edn :as edn])
   (:require [clojure.math :as math]))
 
-; I'm given some int ranges in the form:
-; 95-115,998-1012,1188511880-1188511890
-; I need to sep the ranges on , and then for each int in the range
-; I need to step through them and see if any int has a repeating pattern
-; for example 95-115 contains 99 but not 111
-; 111 repeats 3 times but 99 twice
 
 (defn split-dash [id]
   (str/split id #"-" -1))
@@ -47,7 +41,6 @@
        (map split-dash)
        (mapcat count-ids-in-range)
        (flatten)
-       (filter some?)
        (reduce +)
   )
 )
