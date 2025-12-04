@@ -15,25 +15,31 @@
         (= first-pos (- (count haystack) end-buffer)) [haystack acc index end-buffer escape]
         :else [haystack needle first-pos end-buffer true])))
 
-(defn process-line [line]
-  (let [loc1 (reduce find-largest-from-index [line 0 0 1 false] (range 9 0 -1))
-      loc2 (reduce find-largest-from-index [line 0 (+ (nth loc1 2) 1) 0 false] (range 9 0 -1))]
-      (edn/read-string (format "%s%s" (nth line (nth loc1 2)) (nth line (nth loc2 2))))
+(defn locator [line acc index]
+    (reduce find-largest-from-index [line 0 index 0 false] (range 9 0 -1)))
+
+(defn process-line-2 [line]
+  (let [limit 12
+        first-location (reduce find-largest-from-index [line 0 0 1 false] (range 9 0 -1))]
+    (reduce (fn [[line loc acc] limit] 
+      (let [new-loc (locator line 0 (+ (nth loc 2) 1))] 
+          [line new-loc (conj acc (nth new-loc 2))]))
+      [line first-location [(nth first-location 2)]] (range limit))
   ))
 
 (println (->> (read-instructions "fixtures/day3.simple")
-            (map process-line)
-            (reduce +)
+            (map process-line-2)
+            (map println)
             ))
-(println (= 357 (->> (read-instructions "fixtures/day3.simple")
-            (map process-line)
-            (reduce +)
-            )))
-(println (->> (read-instructions "fixtures/day3.full")
-            (map process-line)
-            (reduce +)
-            ))
-(println (= 16854 (->> (read-instructions "fixtures/day3.full")
-            (map process-line)
-            (reduce +)
-            )))
+;(println (= 357 (->> (read-instructions "fixtures/day3.simple")
+;            (map process-line)
+;            (reduce +)
+;            )))
+;(println (->> (read-instructions "fixtures/day3.full")
+;            (map process-line)
+;            (reduce +)
+;            ))
+;(println (= 16854 (->> (read-instructions "fixtures/day3.full")
+;            (map process-line)
+;            (reduce +)
+;            )))
