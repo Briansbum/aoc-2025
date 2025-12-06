@@ -1,11 +1,8 @@
 (ns day3
   (:require [clojure.edn :as edn])
   (:require [clojure.string :as s])
+  (:require [file-ops :as fops])
   (:require [clojure.java.io :as io]))
-
-(defn read-instructions [f]
-  (with-open [rdr (io/reader f)]
-  (reduce conj [] (line-seq rdr))))
 
 (defn find-largest-from-index [[haystack acc index end-buffer escape] needle]
     (let [first-pos (s/index-of haystack (str needle) index)]
@@ -27,7 +24,7 @@
       [line first-location [(nth first-location 2)]] (range limit))
   ))
 
-(println (->> (read-instructions "fixtures/day3.simple")
+(println (->> (fops/read-instructions "fixtures/day3.simple")
             (map process-line-2)
             (map println)
             ))

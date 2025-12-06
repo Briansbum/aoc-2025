@@ -2,18 +2,9 @@
   (:require [clojure.java.io :as io])
   (:require [clojure.string :as str])
   (:require [clojure.edn :as edn])
+  (:require [file-ops :as fops]
+  (:require [string-ops :as sops]
   (:require [clojure.math :as math]))
-
-
-(defn split-dash [id]
-  (str/split id #"-" -1))
-
-(defn split-comma [line]
-  (str/split line #"," -1))
-
-(defn read-instructions [f]
-  (with-open [rdr (io/reader f)]
-  (reduce conj [] (line-seq rdr))))
 
 (defn check-id [id] 
   (let [id-str (str id)
@@ -37,8 +28,8 @@
   (map check-id (range (edn/read-string left) (+ 1 (edn/read-string right)))))
 
 (defn solve [f]
-  (->> (split-comma (first (read-instructions f)))
-       (map split-dash)
+  (->> (sops/split-comma (first (fops/read-instructions f)))
+       (map sops/split-dash)
        (mapcat count-ids-in-range)
        (flatten)
        (reduce +)

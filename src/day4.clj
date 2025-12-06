@@ -1,18 +1,9 @@
 (ns day4
   (:require [clojure.edn :as edn])
   (:require [clojure.string :as s])
+  (:require [file-ops :as fops])
+  (:require [string-ops :as sops])
   (:require [clojure.java.io :as io]))
-
-(defn read-instructions [f]
-  (with-open [rdr (io/reader f)]
-  (reduce conj [] (line-seq rdr))))
-
-(defn split-on-space [search]
-  (s/split search #"\s"))
-
-(defn read-instructions [f]
-  (with-open [rdr (io/reader f)]
-  (reduce conj [] (line-seq rdr))))
 
 (defn search [[fs line-len acc] index]
   (let [
