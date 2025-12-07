@@ -13,7 +13,7 @@
                                 (and (<= (nth c 0) i) (<= i (nth c 1))) (reduced [(inc acc) i])
                                 :else [acc i]))
 
-(defn solve [f]
+(defn solve-part-1 [f]
   (let [
         lines (vec (fops/read-instructions f))
         instruction-split (reduce (fn[acc i](cond
@@ -34,6 +34,23 @@
     (second result)
   ))
 
-(println (solve "fixtures/day5.simple"))
-(println (= 3 (solve "fixtures/day5.simple")))
-(println (solve "fixtures/day5.full"))
+(println (solve-part-1 "fixtures/day5.simple"))
+(println (= 3 (solve-part-1 "fixtures/day5.simple")))
+(println (solve-part-1 "fixtures/day5.full"))
+
+(defn solve-part-2 [f] 
+  (let [
+        lines (vec (fops/read-instructions f))
+        instruction-split (reduce (fn[acc i](cond
+                                              (= "" (nth lines i)) i
+                                              :else (cond
+                                                (not (= acc 0)) acc
+                                                :else 0)
+                                            )) 0 (range (count lines)))
+        ranges (vec (reduce range-extractor [] (subvec lines 0 instruction-split)))
+        l-bounds (reduce - (reverse (sort (map first ranges))))
+        r-bounds (reduce - (reverse (sort (map second ranges))))
+        f (println l-bounds r-bounds (+ r-bounds l-bounds))
+        ]))
+
+(println (solve-part-2 "fixtures/day5.simple"))
